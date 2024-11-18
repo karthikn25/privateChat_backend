@@ -213,6 +213,61 @@ router.put("/edit/:id",upload.single('avatar'),async(req,res)=>{
     res.status(500).json({message:"Internal Server Error"})
   }
 })
+
+// const cloudinary = require('cloudinary').v2;
+// const router = require('express').Router();
+// const upload = require('multer')(); // Assuming multer is used to handle file uploads
+
+// router.put("/edit/:id", upload.single("avatar"), async (req, res) => {
+//   try {
+//     const userId = req.params.id;
+//     const user = await User.findById(userId);
+
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found." });
+//     }
+
+//     let avatarUrl;
+//     if (req.file) {
+//       // Upload image to Cloudinary using the file buffer
+//       avatarUrl = await new Promise((resolve, reject) => {
+//         const uploadStream = cloudinary.uploader.upload_stream(
+//           {
+//             resource_type: "image", // Specify that the file is an image
+//             folder: 'users',        // Specify the folder in Cloudinary to store the file
+//           },
+//           (error, result) => {
+//             if (error) {
+//               return reject(new Error("Cloudinary upload error."));
+//             }
+//             resolve(result.secure_url); // Get the URL of the uploaded image
+//           }
+//         );
+//         // Pass the file buffer to Cloudinary's upload stream
+//         uploadStream.end(req.file.buffer);
+//       });
+//     }
+
+//     // Update the user's information with new fields from the request body and avatar URL
+//     user.username = req.body.username || user.username;
+//     if (avatarUrl) {
+//       user.avatar = avatarUrl; // Update the avatar URL if it's been uploaded
+//     }
+
+//     // Save the updated user information
+//     const updatedUser = await user.save();
+    
+//     // Return a successful response
+//     res.status(200).json({ message: "User updated successfully", user: updatedUser });
+
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// });
+
+module.exports = router;
+
  const userRouter = router;
 
  module.exports = {userRouter}
