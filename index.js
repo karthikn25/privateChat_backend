@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+app.use(express.static(path.join(__dirname, 'uploads'))); // Serve static files from the uploads directory
 
 
 dbConnection();
