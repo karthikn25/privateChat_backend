@@ -158,10 +158,10 @@ router.put("/reset-password/:id/:token", async (req, res) => {
 });
 router.get("/getuser/:id", async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const user =  await User.findOne({_id:id})
+    const { _id } = req.params.id;
+    const user =  await User.findOne(_id)
     if (user) {
-      res.status(200).send({ user, success: true });
+      res.status(200).json({ user, success: true });
     }
   } catch (error) {
     console.log(error);
