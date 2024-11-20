@@ -171,39 +171,20 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-// router.get("/getuser/:id", async (req, res, next) => {
-//   try {
-//     const { _id } = req.params.id;
-//     const user =  await User.findOne(_id)
-//     if (user) {
-//       res.status(200).json({ user, success: true });
-//     }
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).send({
-//       success: false,
-//       error,
-//       message: "User Not Found",
-//     });
-//   }
-// });
-
-router.get("/getuser/:id", verifyToken, async (req, res) => {
+router.get("/getuser/:id", async (req, res, next) => {
   try {
-    const userId = req.params.id;
-    if (userId !== req.user.id) {
-      return res.status(403).json({ message: "You are not authorized to access this data" });
-    }
-    
-    const user = await User.findById(userId);
+    const { _id } = req.params.id;
+    const user =  await User.findOne(_id)
     if (user) {
       res.status(200).json({ user, success: true });
-    } else {
-      res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      error,
+      message: "User Not Found",
+    });
   }
 });
 
