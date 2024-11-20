@@ -157,20 +157,6 @@ router.put("/reset-password/:id/:token", async (req, res) => {
   }
 });
 
-const verifyToken = (req, res, next) => {
-  const token = req.header('Authorization')?.split(' ')[1]; // Assuming token is in the Authorization header
-  if (!token) {
-    return res.status(403).json({ message: 'Access Denied' });
-  }
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Use secret key for verification
-    req.user = decoded;
-    next();
-  } catch (error) {
-    return res.status(400).json({ message: 'Invalid or expired token' });
-  }
-};
-
 router.get("/getuser/:id", async (req, res, next) => {
   try {
     const { _id } = req.params.id;
