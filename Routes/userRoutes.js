@@ -156,20 +156,54 @@ router.put("/reset-password/:id/:token", async (req, res) => {
     console.log(error);
   }
 });
-router.get("/getuser/:id", async (req, res, next) => {
+
+const verifyToken = (req, res, next) => {
+  const token = req.header('Authorization')?.split(' ')[1]; // Assuming token is in the Authorization header
+  if (!token) {
+    return res.status(403).json({ message: 'Access Denied' });
+  }
   try {
-    const { _id } = req.params.id;
-    const user =  await User.findOne(_id)
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Use secret key for verification
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(400).json({ message: 'Invalid or expired token' });
+  }
+};
+
+// router.get("/getuser/:id", async (req, res, next) => {
+//   try {
+//     const { _id } = req.params.id;
+//     const user =  await User.findOne(_id)
+//     if (user) {
+//       res.status(200).json({ user, success: true });
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send({
+//       success: false,
+//       error,
+//       message: "User Not Found",
+//     });
+//   }
+// });
+
+router.get("/getuser/:id", verifyToken, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    if (userId !== req.user.id) {
+      return res.status(403).json({ message: "You are not authorized to access this data" });
+    }
+    
+    const user = await User.findById(userId);
     if (user) {
       res.status(200).json({ user, success: true });
+    } else {
+      res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
-    console.log(error);
-    res.status(500).send({
-      success: false,
-      error,
-      message: "User Not Found",
-    });
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
@@ -189,6 +223,8 @@ router.get("/getall",async(req,res)=>{
 })
 
 // router.put("/edit/:id",upload.single('avatar'),async(req,res)=>{
+
+  
 //   try {
 //    let avatar ;
 
