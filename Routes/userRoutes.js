@@ -220,7 +220,8 @@ router.get("/getall",async(req,res)=>{
 router.put("/edit/:id", uploads.single("avatar"), async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await User.findOne(userId);
+    console.log("User ID:", userId); // Log the userId to ensure it's correct
+    const user = await User.findById(userId); // Use findById to fetch by user ID
 
     if (!user) {
       return res.status(404).json({ message: "User not found." });
@@ -228,32 +229,42 @@ router.put("/edit/:id", uploads.single("avatar"), async (req, res) => {
 
     let avatarUrl;
     if (req.file) {
+      console.log("File received:", req.file); // Log file info for debugging
+
       avatarUrl = await new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream({
           resource_type: "image",
           folder: 'users', 
         }, (error, result) => {
           if (error) {
+            console.error("Cloudinary upload error:", error); // Log the error
             return reject(new Error("Cloudinary upload error."));
           }
+          console.log("Cloudinary upload result:", result); // Log the result
           resolve(result.secure_url);
         });
+        
+        // Ensure the stream is closed properly after uploading
         uploadStream.end(req.file.buffer);
       });
     }
 
+    // Update user details
     user.username = req.body.username || user.username;
     user.bio = req.body.bio || user.bio;
     if (avatarUrl) {
       user.avatar = avatarUrl; // Update the avatar URL
     }
 
+    // Save the updated user
     const updatedUser = await user.save();
     res.status(200).json({ message: "User updated successfully", user: updatedUser });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error updating user:", error); // Log the error
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 });
+
 
 module.exports = router;
 
