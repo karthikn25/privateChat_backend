@@ -220,7 +220,7 @@ router.get("/getall",async(req,res)=>{
 router.put("/edit/:id", uploads.single("avatar"), async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await User.findById(userId);
+    const user = await User.findOne(userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found." });
@@ -243,6 +243,7 @@ router.put("/edit/:id", uploads.single("avatar"), async (req, res) => {
     }
 
     user.username = req.body.username || user.username;
+    user.bio = req.body.bio || user.bio;
     if (avatarUrl) {
       user.avatar = avatarUrl; // Update the avatar URL
     }
